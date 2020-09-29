@@ -53,7 +53,7 @@ function askWolfram(request, simple = false) {
 					let response = data.substring(startIndex, endIndex);
 
 					// Remove Excess Text
-					response = response.replace(/Wolfram/gi, "");
+					response = response.replace(/wolfram.*alpha/gim, "").replace(/wolfram/gim, "");
 					if (response.indexOf("\n(") >= 0) {
 						response = response.substring(0, response.indexOf("\n("));
 					}
