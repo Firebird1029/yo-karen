@@ -4,6 +4,11 @@ const Discord = require("discord.js"),
 const client = new Discord.Client();
 
 // Config
+if (!process.env.BOT_TOKEN) {
+	// assert environment keys are loaded
+	console.log("ERROR: Environment keys not found.");
+	process.exit();
+}
 const debug = false;
 const prefix = "yo karen "; // or "!", "-", "%"
 
