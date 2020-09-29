@@ -2,61 +2,72 @@ const Discord = require("discord.js"),
 	puppeteer = require("puppeteer");
 const client = new Discord.Client();
 
+// Config
+const debug = false;
 const prefix = "yo karen "; // or "!", "-", "%"
 
-(async () => {
-	console.log("Start");
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-	await page.goto("https://www.cleverbot.com/");
-	console.log("Page loaded");
+// Setup Puppeteer + Cleverbot
+let page;
+debug && console.log("Starting");
+puppeteer.launch().then((browser) => {
+	browser.newPage().then((thePage) => {
+		page = thePage;
+		page.goto("https://www.cleverbot.com/").then(() => {
+			debug && console.log("Page loaded");
+			console.log("Setup complete");
+		});
+	});
+});
 
-	async function askCleverBot(request) {
+// Ask Cleverbot Function
+function askCleverBot(request) {
+	async function askCleverBotHelper(request, callback) {
 		// Send over a message
-		console.log("Sending message");
+		debug && console.log("Sending message");
 		await page.evaluate((request) => {
 			document.querySelector(".stimulus").value = request;
 			cleverbot.sendAI(); // a form submit event triggers this API call
 		}, request); // bind request variable into evaluate function
 
 		// Wait for response
-		console.log("Awaiting response");
+		debug && console.log("Awaiting response");
 		await page.waitForSelector("#snipTextIcon"); // #snipTextIcon is added to DOM when the bot finishes speaking
 
 		// Parse response
 		const response = await page.evaluate(() => {
 			return document.querySelector("#line1 .bot").textContent; // the bot always says its last message in #line1
 		});
-		console.log(response);
+		debug && console.log(response);
+		callback(response);
 	}
 
-	// Discord Code
-	// ----------
-	client.on("message", (message) => {
-		if (message.author.bot) return;
-		if (!message.content.startsWith(prefix)) return;
-
-		// Parse Command and Arguments
-		const args = message.content.slice(prefix.length).split(" ");
-		// const command = args.shift().toLowerCase();
-
-		// Commands
-		// if (command === "ping") {
-		// 	const timeTaken = Date.now() - message.createdTimestamp;
-		// 	message.reply(`Pong! This message had a latency of ${timeTaken} ms.`);
-		// }
-		askCleverBot(args);
+	return new Promise((resolve) => {
+		askCleverBotHelper(request, (response) => {
+			resolve(response);
+		});
 	});
+}
 
-	client.login(process.env.BOT_TOKEN).catch((err) => {
-		console.log(err);
+// Discord Code
+// ----------
+client.on("message", (message) => {
+	if (message.author.bot) return;
+	if (!message.content.startsWith(prefix)) return;
+
+	// Parse Command and Arguments
+	const args = message.content.slice(prefix.length).split(" ");
+	// const command = args.shift().toLowerCase();
+
+	// Collect answer from Cleverbot, then pass back to Discord
+	askCleverBot(args).then((answer) => {
+		message.reply(answer);
 	});
-	// ----------
+});
 
-	// console.log("Closing");
-	// await browser.close();
-	// console.log("Closed");
-})();
+client.login(process.env.BOT_TOKEN).catch((err) => {
+	console.log(err);
+});
+// ----------
 
 /*
  * Resources
