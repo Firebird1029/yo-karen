@@ -1,0 +1,32 @@
+{
+	"name": "yo-karen",
+	"version": "1.0.0",
+	"description": "A very, definitely, without-a-doubt intelligent Discord bot.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node -r dotenv/config index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Firebird1029/yo-karen.git"
+	},
+	"author": "Brandon Yee",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Firebird1029/yo-karen/issues"
+	},
+	"homepage": "https://github.com/Firebird1029/yo-karen#readme",
+	"dependencies": {
+		"@discordjs/opus": "^0.3.2",
+		"bufferutil": "^4.0.1",
+		"discord.js": "^12.3.1",
+		"erlpack": "^0.1.3",
+		"sodium": "^3.0.2",
+		"utf-8-validate": "^5.0.2",
+		"zlib-sync": "^0.1.7"
+	},
+	"devDependencies": {
+		"dotenv": "^8.2.0"
+	}
+}
