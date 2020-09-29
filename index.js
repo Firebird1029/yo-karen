@@ -1,6 +1,7 @@
 const Discord = require("discord.js"),
 	axios = require("axios"),
-	puppeteer = require("puppeteer");
+	puppeteer = require("puppeteer"),
+	he = require("he");
 const client = new Discord.Client();
 
 // Config
@@ -9,7 +10,7 @@ if (!process.env.BOT_TOKEN) {
 	console.log("ERROR: Environment keys not found.");
 	process.exit();
 }
-const debug = false;
+const debug = process.env.NODE_ENV !== "production";
 const prefix = "yo karen "; // or "!", "-", "%"
 
 // Setup Puppeteer + Cleverbot
@@ -49,7 +50,14 @@ function askWolfram(request, simple = false) {
 					// if there is no <plaintext></plaintext>, Wolfram doesn't have a direct answer
 					const startIndex = data.indexOf("<plaintext>") + "<plaintext>".length;
 					const endIndex = data.indexOf("</plaintext>");
-					resolve({ status: "success", response: data.substring(startIndex, endIndex) });
+					let response = data.substring(startIndex, endIndex);
+
+					// Remove Excess Text
+					response = response.replace(/Wolfram/gi, "");
+					if (response.indexOf("\n(") >= 0) {
+						response = response.substring(0, response.indexOf("\n("));
+					}
+					resolve({ status: "success", response: he.decode(response) });
 				} else {
 					// WolframAlpha doesn't know
 					resolve({ status: "fail", response: null });
@@ -95,7 +103,7 @@ function askCleverBot(request) {
 // ----------
 client.on("message", (message) => {
 	if (message.author.bot) return;
-	if (!message.content.startsWith(prefix)) return;
+	if (!message.content.toLowerCase().startsWith(prefix)) return;
 
 	// Parse Command and Arguments
 	const args = message.content.slice(prefix.length);
@@ -140,4 +148,5 @@ client.login(process.env.BOT_TOKEN).catch((err) => {
  * https://github.com/gliderlabs/herokuish/issues/321
  * https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/to-existing-droplet/
  * https://www.digitalocean.com/community/questions/dokku-add-new-ssh-key
+ * https://stackoverflow.com/questions/7394748/whats-the-right-way-to-decode-a-string-that-has-special-html-entities-in-it
  */
