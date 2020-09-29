@@ -15,15 +15,19 @@ const prefix = "yo karen "; // or "!", "-", "%"
 // Setup Puppeteer + Cleverbot
 let page;
 debug && console.log("Starting");
-puppeteer.launch().then((browser) => {
-	browser.newPage().then((thePage) => {
-		page = thePage;
-		page.goto("https://www.cleverbot.com/").then(() => {
-			debug && console.log("Page loaded");
-			console.log("Setup complete");
+puppeteer
+	.launch({
+		args: ["--no-sandbox", "--disable-setuid-sandbox"]
+	})
+	.then((browser) => {
+		browser.newPage().then((thePage) => {
+			page = thePage;
+			page.goto("https://www.cleverbot.com/").then(() => {
+				debug && console.log("Page loaded");
+				console.log("Setup complete");
+			});
 		});
 	});
-});
 
 // Ask WolframAlpha Function
 // Warning: Free API only has 2,000 calls/month
