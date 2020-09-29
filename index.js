@@ -134,6 +134,9 @@ client.login(process.env.BOT_TOKEN).catch((err) => {
  * https://github.com/puppeteer/puppeteer
  * https://gist.github.com/LeCoupa/e8b9aac95d0d7acbde740c91c4bcc178
  * https://www.digitalocean.com/community/tutorials/how-to-build-a-discord-bot-with-node-js
+ * https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-on-heroku
+ * https://stackoverflow.com/questions/52225461/puppeteer-unable-to-run-on-heroku
+ * https://github.com/dokku/dokku/blob/master/docs/deployment/methods/buildpacks.md
  * https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/to-existing-droplet/
  * https://www.digitalocean.com/community/questions/dokku-add-new-ssh-key
  */
